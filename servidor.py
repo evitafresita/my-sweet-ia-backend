@@ -50,9 +50,9 @@ async def chatear(pregunta: Pregunta, api_key: str = Depends(verify_api_key)):
         Responde de forma concisa y amigable. Añade UNA de estas etiquetas al final: [feliz], [pensando], [sorprendida], [amor].
         """
         
-        # AHORA USAMOS EL MODELO DE TU LISTA
+        # Modelo actualizado a la versión recomendada
         model = genai.GenerativeModel(
-            model_name='gemini-2.5-flash',
+            model_name='gemini-3.8-flash',
             system_instruction=system_prompt
         )
         
@@ -85,7 +85,8 @@ async def obtener_dato(api_key: str = Depends(verify_api_key)):
         }
         """
         
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        # Modelo actualizado también aquí
+        model = genai.GenerativeModel('gemini-3.8-flash')
         respuesta = model.generate_content(prompt)
         texto = respuesta.text.strip()
         
