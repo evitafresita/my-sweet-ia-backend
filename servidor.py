@@ -9,11 +9,10 @@ import uvicorn
 import json
 
 # 1. CONFIGURACIÓN SEGURA DE GOOGLE AI
-# Busca la clave en las variables de entorno (en Render la configuramos allí)
 API_KEY_GOOGLE = os.getenv("GOOGLE_API_KEY")
 
 if not API_KEY_GOOGLE:
-    print("⚠️ ADVERTENCIA: No se encontró la variable GOOGLE_API_KEY. El servidor no podrá pensar.")
+    print("⚠️ ADVERTENCIA: No se encontró la variable GOOGLE_API_KEY.")
 
 genai.configure(api_key=API_KEY_GOOGLE)
 
@@ -27,7 +26,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- SISTEMA DE SEGURIDAD (Llave para tu HTML) ---
 API_KEY_NAME = "X-My-Sweet-Key"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 EXPECTED_API_KEY = "MySweetIA_Super_Secreto_2024"
@@ -52,6 +50,7 @@ async def chatear(pregunta: Pregunta, api_key: str = Depends(verify_api_key)):
         Responde de forma concisa y amigable. Añade UNA de estas etiquetas al final: [feliz], [pensando], [sorprendida], [amor].
         """
         
+        # AHORA USAMOS EL MODELO DE TU LISTA
         model = genai.GenerativeModel(
             model_name='gemini-2.5-flash',
             system_instruction=system_prompt
@@ -72,7 +71,7 @@ async def chatear(pregunta: Pregunta, api_key: str = Depends(verify_api_key)):
         print(f"Error en chat: {e}")
         return {"respuesta": "¡Piiip! Tuve un error al pensar.", "estado": "sorprendida"}
 
-# --- RUTA 2: DATOS CURIOSOS PARA LA BARRA LATERAL ---
+# --- RUTA 2: DATOS CURIOSOS ---
 @app.get("/dato_curioso")
 async def obtener_dato(api_key: str = Depends(verify_api_key)):
     try:
@@ -90,7 +89,6 @@ async def obtener_dato(api_key: str = Depends(verify_api_key)):
         respuesta = model.generate_content(prompt)
         texto = respuesta.text.strip()
         
-        # Limpiamos posibles bloques de markdown que Gemini a veces añade
         if texto.startswith("```json"): texto = texto[7:]
         if texto.startswith("```"): texto = texto[3:]
         if texto.endswith("```"): texto = texto[:-3]
@@ -106,7 +104,6 @@ async def obtener_dato(api_key: str = Depends(verify_api_key)):
             "autor": "Sistema"
         }
 
-# --- CONFIGURACIÓN PARA RENDER ---
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
