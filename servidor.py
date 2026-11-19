@@ -53,7 +53,7 @@ async def chatear(pregunta: Pregunta, api_key: str = Depends(verify_api_key)):
         """
         
         model = genai.GenerativeModel(
-            model_name='gemini-1.5-flash',
+            model_name='gemini-2.5-flash',
             system_instruction=system_prompt
         )
         
@@ -86,7 +86,7 @@ async def obtener_dato(api_key: str = Depends(verify_api_key)):
         }
         """
         
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         respuesta = model.generate_content(prompt)
         texto = respuesta.text.strip()
         
